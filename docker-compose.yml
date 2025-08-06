@@ -1,0 +1,76 @@
+services:
+    # Backend service (supports both dev and prod modes)
+    comics-ai-backend:
+        build:
+            context: .
+            dockerfile: ${DOCKERFILE:-Dockerfile.dev}
+        ports:
+            - "${PORT:-3000}:3000"
+        environment:
+            - NODE_ENV=${NODE_ENV:-development}
+            - PORT=3000
+            - HOST=0.0.0.0
+        volumes:
+            - ./logs:/app/logs
+        restart: unless-stopped
+        depends_on:
+            - postgres
+            - redis
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "node",
+                    "-e",
+                    "require('http').get('http://localhost:3000/health/live', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+
+    postgres:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_DB: comics_ai
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        restart: unless-stopped
+
+    redis:
+        image: redis:alpine
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        restart: unless-stopped
+
+    # Database Administration UI
+    adminer:
+        image: adminer:latest
+        ports:
+            - "8080:8080"
+        environment:
+            ADMINER_DEFAULT_SERVER: postgres
+        depends_on:
+            - postgres
+        restart: unless-stopped
+
+    # Redis Management UI
+    redis-commander:
+        image: rediscommander/redis-commander:latest
+        ports:
+            - "8081:8081"
+        environment:
+            REDIS_HOSTS: local:redis:6379
+        depends_on:
+            - redis
+        restart: unless-stopped
+
+volumes:
+    postgres_data:
+    redis_data:

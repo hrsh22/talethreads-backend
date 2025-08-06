@@ -1,0 +1,7 @@
+# Development override - adds hot reload volumes
+services:
+    comics-ai-backend:
+        volumes:
+            - ./src:/app/src
+            - ./package.json:/app/package.json
+            - ./tsconfig.json:/app/tsconfig.json

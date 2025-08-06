@@ -1,0 +1,49 @@
+{
+    "name": "comics-ai-backend",
+    "version": "1.0.0",
+    "description": "Comics AI Backend Microservice",
+    "main": "dist/server.js",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsx watch src/server.ts",
+        "start": "node dist/server.js",
+        "clean": "rm -rf dist",
+        "prebuild": "npm run clean",
+        "postbuild": "cp -r src/config dist/",
+        "type-check": "tsc --noEmit",
+        "format": "prettier --write \"src/**/*.{ts,js,json}\"",
+        "format:check": "prettier --check \"src/**/*.{ts,js,json}\"",
+        "lint": "npm run type-check && npm run format:check",
+        "docker:dev": "NODE_ENV=development DOCKERFILE=Dockerfile.dev docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
+        "docker:dev:build": "NODE_ENV=development DOCKERFILE=Dockerfile.dev docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build",
+        "docker:prod": "NODE_ENV=production DOCKERFILE=Dockerfile docker-compose up",
+        "docker:prod:build": "NODE_ENV=production DOCKERFILE=Dockerfile docker-compose up --build"
+    },
+    "author": "hrsh22",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.18.2",
+        "cors": "^2.8.5",
+        "helmet": "^7.1.0",
+        "winston": "^3.11.0",
+        "dotenv": "^16.3.1",
+        "compression": "^1.7.4",
+        "express-rate-limit": "^7.1.5",
+        "zod": "^3.22.4",
+        "uuid": "^9.0.1"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.21",
+        "@types/cors": "^2.8.17",
+        "@types/compression": "^1.7.5",
+        "@types/node": "^20.10.0",
+        "@types/uuid": "^9.0.7",
+        "prettier": "^3.1.0",
+        "tsx": "^4.6.2",
+        "typescript": "^5.3.2"
+    },
+    "engines": {
+        "node": ">=22.0.0",
+        "npm": ">=8.0.0"
+    }
+}
