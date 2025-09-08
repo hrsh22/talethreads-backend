@@ -1,4 +1,4 @@
-# Comics AI Backend
+# Talethreads Backend
 
 A production-ready microservice architecture backend built with TypeScript, Node.js, and Express.
 
