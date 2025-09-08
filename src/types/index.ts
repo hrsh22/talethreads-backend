@@ -16,6 +16,14 @@ export interface AppConfig {
         level: string;
         format: string;
     };
+    database: {
+        url: string;
+        ssl: boolean;
+        pool: {
+            min: number;
+            max: number;
+        };
+    };
 }
 
 export interface ApiResponse<T = any> {

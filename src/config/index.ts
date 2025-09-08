@@ -15,7 +15,11 @@ const envSchema = z.object({
     RATE_LIMIT_WINDOW_MS: z.coerce.number().positive().default(900000),
     RATE_LIMIT_MAX_REQUESTS: z.coerce.number().positive().default(100),
     LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]).default("info"),
-    LOG_FORMAT: z.enum(["json", "simple"]).default("json")
+    LOG_FORMAT: z.enum(["json", "simple"]).default("json"),
+    DATABASE_URL: z.string().default("postgresql://postgres:password@localhost:5433/comics_ai"),
+    DB_POOL_MIN: z.coerce.number().min(0).default(2),
+    DB_POOL_MAX: z.coerce.number().min(1).default(10),
+    DB_SSL: z.enum(["true", "false"]).default("false")
 });
 
 const parseResult = envSchema.safeParse(process.env);
@@ -41,6 +45,14 @@ const appConfig: AppConfig = {
     logging: {
         level: envVars.LOG_LEVEL,
         format: envVars.LOG_FORMAT
+    },
+    database: {
+        url: envVars.DATABASE_URL,
+        ssl: envVars.DB_SSL === "true",
+        pool: {
+            min: envVars.DB_POOL_MIN,
+            max: envVars.DB_POOL_MAX
+        }
     }
 };
 

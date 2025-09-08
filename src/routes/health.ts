@@ -1,22 +1,28 @@
 import { Router, Request, Response } from "express";
 import { HealthCheckResponse } from "@/types";
 import config from "@/config";
+import { dbConnection } from "@/db";
 
 const router = Router();
 
-router.get("/", (req: Request, res: Response) => {
+router.get("/", async (_req: Request, res: Response) => {
     const uptime = process.uptime();
     const memoryUsage = process.memoryUsage();
     const memoryUsedMB = Math.round(memoryUsage.heapUsed / 1024 / 1024);
     const memoryTotalMB = Math.round(memoryUsage.heapTotal / 1024 / 1024);
     const memoryPercentage = Math.round((memoryUsedMB / memoryTotalMB) * 100);
 
+    // Check database health
+    const isDatabaseHealthy = await dbConnection.healthCheck();
+    const overallStatus = isDatabaseHealthy ? "healthy" : "unhealthy";
+
     const healthCheck: HealthCheckResponse = {
-        status: "healthy",
+        status: overallStatus,
         version: config.serviceVersion,
         timestamp: new Date().toISOString(),
         uptime: Math.floor(uptime),
         checks: {
+            database: isDatabaseHealthy ? "connected" : "disconnected",
             memory: {
                 used: memoryUsedMB,
                 free: memoryTotalMB - memoryUsedMB,
@@ -25,18 +31,26 @@ router.get("/", (req: Request, res: Response) => {
         }
     };
 
-    res.status(200).json(healthCheck);
+    const statusCode = overallStatus === "healthy" ? 200 : 503;
+    res.status(statusCode).json(healthCheck);
 });
 
-router.get("/ready", (req: Request, res: Response) => {
+router.get("/ready", async (_req: Request, res: Response) => {
     // Add readiness checks here (database, external services, etc.)
-    res.status(200).json({
-        status: "ready",
-        timestamp: new Date().toISOString()
+    const isDatabaseReady = await dbConnection.healthCheck();
+    const isReady = isDatabaseReady; // Add other service checks here
+
+    const statusCode = isReady ? 200 : 503;
+    res.status(statusCode).json({
+        status: isReady ? "ready" : "not ready",
+        timestamp: new Date().toISOString(),
+        checks: {
+            database: isDatabaseReady ? "ready" : "not ready"
+        }
     });
 });
 
-router.get("/live", (req: Request, res: Response) => {
+router.get("/live", (_req: Request, res: Response) => {
     // Add liveness checks here
     res.status(200).json({
         status: "alive",

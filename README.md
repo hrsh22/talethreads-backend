@@ -54,6 +54,13 @@ npm run clean        # Clean build directory
 # Docker scripts
 npm run docker:dev   # Start development environment with hot reload
 npm run docker:prod  # Start production environment
+
+# Database scripts (using Drizzle ORM)
+npm run db:generate  # Generate migrations from schema changes
+npm run db:migrate   # Run pending migrations
+npm run db:push      # Push schema changes directly (dev only)
+npm run db:studio    # Open Drizzle Studio (database admin UI)
+npm run db:seed      # Seed database with initial data
 ```
 
 ## Docker Setup
@@ -76,8 +83,8 @@ npm run docker:dev
 
 # Access development server:
 # - Backend API: http://localhost:3000 (hot reload enabled)
-# - Database Admin: http://localhost:8080
 # - Redis Admin: http://localhost:8081
+# - Database Admin: npm run db:studio (Drizzle Studio)
 ```
 
 #### Production Mode
@@ -91,8 +98,8 @@ docker-compose logs -f
 
 # Access services:
 # - Backend API: http://localhost:3000
-# - Database Admin: http://localhost:8080
 # - Redis Admin: http://localhost:8081
+# - Database Admin: npm run db:studio (Drizzle Studio)
 ```
 
 ### Docker Commands
@@ -140,6 +147,9 @@ docker-compose ps
 # Access PostgreSQL directly
 docker-compose exec postgres psql -U postgres -d comics_ai
 
+# Access PostgreSQL from host (port 5433)
+psql -h localhost -p 5433 -U postgres -d comics_ai
+
 # Create database backup
 docker-compose exec postgres pg_dump -U postgres comics_ai > backup.sql
 
@@ -168,10 +178,10 @@ docker-compose down -v
 | Service           | Port | Description                           |
 | ----------------- | ---- | ------------------------------------- |
 | Comics AI Backend | 3000 | API server (prod/dev via npm scripts) |
-| PostgreSQL        | 5432 | Database server                       |
+| PostgreSQL        | 5433 | Database server                       |
 | Redis             | 6379 | Cache & session store                 |
-| Adminer           | 8080 | Database admin UI                     |
 | Redis Commander   | 8081 | Redis management UI                   |
+| Drizzle Studio    | 4983 | Database admin UI (run locally)       |
 
 ## Project Structure
 
@@ -246,16 +256,15 @@ curl http://localhost:3000/health
 
 ## Features Included
 
-✅ **Database**: PostgreSQL 17 with admin UI  
+✅ **Database**: PostgreSQL 17 with Drizzle ORM & Studio  
 ✅ **Caching**: Redis with management UI  
 ✅ **Containerization**: Full Docker setup  
-✅ **Development Tools**: Database and Redis admin interfaces
+✅ **Development Tools**: Drizzle Studio and Redis admin interfaces
 
 ## Future Enhancements
 
 This foundation is ready for:
 
-- **ORM**: Drizzle integration with PostgreSQL
 - **Authentication**: JWT-based auth system
 - **File Storage**: MinIO for comic images
 - **Monitoring**: Prometheus + Grafana

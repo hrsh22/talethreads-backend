@@ -1,13 +1,16 @@
 import app from "./app";
 import config from "@/config";
 import logger from "@/utils/logger";
+import { dbConnection } from "@/db";
 
 const startServer = async (): Promise<void> => {
     try {
         // Add any startup checks here (database connections, etc.)
         logger.info("Starting server initialization...");
 
-        // TODO: Add database connection initialization
+        // Initialize database connection
+        await dbConnection.connect();
+
         // TODO: Add Redis connection initialization
 
         const server = app.listen(config.port, config.host, () => {
@@ -34,10 +37,16 @@ const startServer = async (): Promise<void> => {
                 logger.info("Server closed successfully");
 
                 // Close database connections here
-                // TODO: Close database connections
-                // TODO: Close Redis connections
-
-                process.exit(0);
+                dbConnection.disconnect()
+                    .then(() => {
+                        logger.info("Database connections closed");
+                        // TODO: Close Redis connections
+                        process.exit(0);
+                    })
+                    .catch((err) => {
+                        logger.error("Error closing database connections:", err);
+                        process.exit(1);
+                    });
             });
 
             // Force shutdown after 30 seconds

@@ -13,13 +13,11 @@ declare global {
             LOG_LEVEL: "error" | "warn" | "info" | "debug";
             LOG_FORMAT: "json" | "simple";
 
-            // Future database variables
-            DATABASE_URL?: string;
-            DB_HOST?: string;
-            DB_PORT?: string;
-            DB_NAME?: string;
-            DB_USER?: string;
-            DB_PASSWORD?: string;
+            // Database configuration
+            DATABASE_URL: string;
+            DB_POOL_MIN: string;
+            DB_POOL_MAX: string;
+            DB_SSL: "true" | "false";
 
             // Future Redis variables
             REDIS_URL?: string;
@@ -30,4 +28,4 @@ declare global {
     }
 }
 
-export {}; // Make this file a module
+export { }; // Make this file a module
