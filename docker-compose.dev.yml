@@ -1,7 +1,18 @@
-# Development override - adds hot reload volumes
+# Development override - adds hot reload volumes and Redis Commander UI
 services:
     comics-ai-backend:
         volumes:
             - ./src:/app/src
             - ./package.json:/app/package.json
             - ./tsconfig.json:/app/tsconfig.json
+
+    # Redis Management UI (Development only)
+    redis-commander:
+        image: rediscommander/redis-commander:latest
+        ports:
+            - "8081:8081"
+        environment:
+            REDIS_HOSTS: local:redis:6379
+        depends_on:
+            - redis
+        restart: unless-stopped

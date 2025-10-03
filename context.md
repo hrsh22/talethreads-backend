@@ -46,7 +46,7 @@
     - Database migrations and schema management
     - Drizzle Studio (database admin UI)
     - Redis caching
-    - Redis admin UI (Redis Commander)
+    - Redis admin UI (Redis Commander) - Development only
 
 ### What's Not Implemented ❌
 
@@ -206,7 +206,7 @@ npm run docker:prod   # Production build & deployment
 | Backend API     | 3000 | Main application           |
 | PostgreSQL      | 5433 | Database (Docker mapped)   |
 | Redis           | 6379 | Cache/sessions             |
-| Redis Commander | 8081 | Redis admin                |
+| Redis Commander | 8081 | Redis admin (dev only)     |
 | Drizzle Studio  | 4983 | Database admin (run local) |
 
 ## Configuration Reference
@@ -352,7 +352,7 @@ LOG_FORMAT=json|simple
 - **Winston logs**: Structured logging output
 - **Request IDs**: Trace requests across services
 - **Drizzle Studio**: Visual database inspection and querying
-- **Redis Commander**: Redis data inspection
+- **Redis Commander**: Redis data inspection (development only)
 
 ### Performance Monitoring
 

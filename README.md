@@ -83,7 +83,7 @@ npm run docker:dev
 
 # Access development server:
 # - Backend API: http://localhost:3000 (hot reload enabled)
-# - Redis Admin: http://localhost:8081
+# - Redis Admin: http://localhost:8081 (dev only)
 # - Database Admin: npm run db:studio (Drizzle Studio)
 ```
 
@@ -98,7 +98,6 @@ docker-compose logs -f
 
 # Access services:
 # - Backend API: http://localhost:3000
-# - Redis Admin: http://localhost:8081
 # - Database Admin: npm run db:studio (Drizzle Studio)
 ```
 
@@ -180,7 +179,7 @@ docker-compose down -v
 | Comics AI Backend | 3000 | API server (prod/dev via npm scripts) |
 | PostgreSQL        | 5433 | Database server                       |
 | Redis             | 6379 | Cache & session store                 |
-| Redis Commander   | 8081 | Redis management UI                   |
+| Redis Commander   | 8081 | Redis management UI (dev only)        |
 | Drizzle Studio    | 4983 | Database admin UI (run locally)       |
 
 ## Project Structure
