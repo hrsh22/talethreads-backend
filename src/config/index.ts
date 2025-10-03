@@ -16,10 +16,18 @@ const envSchema = z.object({
     RATE_LIMIT_MAX_REQUESTS: z.coerce.number().positive().default(100),
     LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]).default("info"),
     LOG_FORMAT: z.enum(["json", "simple"]).default("json"),
-    DATABASE_URL: z.string().default("postgresql://postgres:password@localhost:5433/comics_ai"),
+    DATABASE_URL: z.string().default("postgresql://postgres:password@postgres:5433/comics_ai"),
     DB_POOL_MIN: z.coerce.number().min(0).default(2),
     DB_POOL_MAX: z.coerce.number().min(1).default(10),
-    DB_SSL: z.enum(["true", "false"]).default("false")
+    DB_SSL: z.enum(["true", "false"]).default("false"),
+
+    // Redis configuration
+    REDIS_HOST: z.string().default("redis"),
+    REDIS_PORT: z.coerce.number().min(1).max(65535).default(6379),
+    REDIS_PASSWORD: z.string().optional(),
+    REDIS_DB: z.coerce.number().min(0).default(0),
+    REDIS_KEY_PREFIX: z.string().default("comics-ai:"),
+    REDIS_TTL: z.coerce.number().positive().default(3600)
 });
 
 const parseResult = envSchema.safeParse(process.env);
@@ -53,6 +61,14 @@ const appConfig: AppConfig = {
             min: envVars.DB_POOL_MIN,
             max: envVars.DB_POOL_MAX
         }
+    },
+    redis: {
+        host: envVars.REDIS_HOST,
+        port: envVars.REDIS_PORT,
+        password: envVars.REDIS_PASSWORD,
+        db: envVars.REDIS_DB,
+        keyPrefix: envVars.REDIS_KEY_PREFIX,
+        ttl: envVars.REDIS_TTL
     }
 };
 

@@ -1,7 +1,7 @@
 import app from "./app";
 import config from "@/config";
 import logger from "@/utils/logger";
-import { dbConnection } from "@/db";
+import { dbConnection, redisConnection } from "@/db";
 
 const startServer = async (): Promise<void> => {
     try {
@@ -11,7 +11,8 @@ const startServer = async (): Promise<void> => {
         // Initialize database connection
         await dbConnection.connect();
 
-        // TODO: Add Redis connection initialization
+        // Initialize Redis connection
+        await redisConnection.connect();
 
         const server = app.listen(config.port, config.host, () => {
             logger.info(`🚀 ${config.serviceName} v${config.serviceVersion} started`, {
@@ -37,14 +38,16 @@ const startServer = async (): Promise<void> => {
                 logger.info("Server closed successfully");
 
                 // Close database connections here
-                dbConnection.disconnect()
+                Promise.all([
+                    dbConnection.disconnect(),
+                    redisConnection.disconnect()
+                ])
                     .then(() => {
-                        logger.info("Database connections closed");
-                        // TODO: Close Redis connections
+                        logger.info("Database and Redis connections closed");
                         process.exit(0);
                     })
                     .catch((err) => {
-                        logger.error("Error closing database connections:", err);
+                        logger.error("Error closing connections:", err);
                         process.exit(1);
                     });
             });

@@ -19,11 +19,13 @@ declare global {
             DB_POOL_MAX: string;
             DB_SSL: "true" | "false";
 
-            // Future Redis variables
-            REDIS_URL?: string;
-            REDIS_HOST?: string;
-            REDIS_PORT?: string;
+            // Redis configuration
+            REDIS_HOST: string;
+            REDIS_PORT: string;
             REDIS_PASSWORD?: string;
+            REDIS_DB: string;
+            REDIS_KEY_PREFIX: string;
+            REDIS_TTL: string;
         }
     }
 }

@@ -82,7 +82,7 @@ router.get("/items/:id", validateRequest(itemParamsSchema, "params"), (req: Requ
 });
 
 // Example error endpoint
-router.get("/error", (req: Request, res: Response, next) => {
+router.get("/error", (_req: Request, _res: Response, next) => {
     const error = new CustomError("This is a test error endpoint", 500, "TEST_ERROR");
     next(error);
 });

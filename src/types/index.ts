@@ -24,6 +24,14 @@ export interface AppConfig {
             max: number;
         };
     };
+    redis: {
+        host: string;
+        port: number;
+        password: string | undefined;
+        db: number;
+        keyPrefix: string;
+        ttl: number;
+    };
 }
 
 export interface ApiResponse<T = any> {

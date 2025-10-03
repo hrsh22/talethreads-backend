@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { HealthCheckResponse } from "@/types";
 import config from "@/config";
-import { dbConnection } from "@/db";
+import { dbConnection, redisConnection } from "@/db";
 
 const router = Router();
 
@@ -14,7 +14,12 @@ router.get("/", async (_req: Request, res: Response) => {
 
     // Check database health
     const isDatabaseHealthy = await dbConnection.healthCheck();
-    const overallStatus = isDatabaseHealthy ? "healthy" : "unhealthy";
+
+    // Check Redis health
+    const isRedisHealthy = await redisConnection.healthCheck();
+
+    // Overall status is healthy only if both database and Redis are healthy
+    const overallStatus = isDatabaseHealthy && isRedisHealthy ? "healthy" : "unhealthy";
 
     const healthCheck: HealthCheckResponse = {
         status: overallStatus,
@@ -23,6 +28,7 @@ router.get("/", async (_req: Request, res: Response) => {
         uptime: Math.floor(uptime),
         checks: {
             database: isDatabaseHealthy ? "connected" : "disconnected",
+            redis: isRedisHealthy ? "connected" : "disconnected",
             memory: {
                 used: memoryUsedMB,
                 free: memoryTotalMB - memoryUsedMB,
@@ -38,14 +44,16 @@ router.get("/", async (_req: Request, res: Response) => {
 router.get("/ready", async (_req: Request, res: Response) => {
     // Add readiness checks here (database, external services, etc.)
     const isDatabaseReady = await dbConnection.healthCheck();
-    const isReady = isDatabaseReady; // Add other service checks here
+    const isRedisReady = await redisConnection.healthCheck();
+    const isReady = isDatabaseReady && isRedisReady; // Add other service checks here
 
     const statusCode = isReady ? 200 : 503;
     res.status(statusCode).json({
         status: isReady ? "ready" : "not ready",
         timestamp: new Date().toISOString(),
         checks: {
-            database: isDatabaseReady ? "ready" : "not ready"
+            database: isDatabaseReady ? "ready" : "not ready",
+            redis: isRedisReady ? "ready" : "not ready"
         }
     });
 });
