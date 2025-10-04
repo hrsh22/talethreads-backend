@@ -9,7 +9,7 @@ export default defineConfig({
     out: "./drizzle/migrations",
     dialect: "postgresql",
     dbCredentials: {
-        url: process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5433/comics_ai"
+        url: process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5433/talethreads"
     },
     verbose: true,
     strict: true

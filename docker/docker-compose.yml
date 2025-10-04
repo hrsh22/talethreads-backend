@@ -1,0 +1,89 @@
+name: talethreads
+services:
+    # Backend service (development)
+    talethreads-backend:
+        build:
+            context: ..
+            dockerfile: ${DOCKERFILE:-docker/Dockerfile.dev}
+        ports:
+            - "${PORT:-3000}:3000"
+        env_file:
+            - .env
+        environment:
+            NODE_ENV: ${NODE_ENV}
+            PORT: ${PORT}
+            HOST: ${HOST}
+            SERVICE_NAME: ${SERVICE_NAME}
+            SERVICE_VERSION: ${SERVICE_VERSION}
+            CORS_ORIGIN: ${CORS_ORIGIN}
+            RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS}
+            RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS}
+            LOG_LEVEL: ${LOG_LEVEL}
+            LOG_FORMAT: ${LOG_FORMAT}
+            DATABASE_URL: ${DATABASE_URL}
+            DB_POOL_MIN: ${DB_POOL_MIN}
+            DB_POOL_MAX: ${DB_POOL_MAX}
+            DB_SSL: ${DB_SSL}
+            REDIS_HOST: ${REDIS_HOST}
+            REDIS_PORT: ${REDIS_PORT}
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+            REDIS_DB: ${REDIS_DB}
+            REDIS_KEY_PREFIX: ${REDIS_KEY_PREFIX}
+            REDIS_TTL: ${REDIS_TTL}
+        volumes:
+            - ../src:/app/src
+            - ../package.json:/app/package.json
+            - ../tsconfig.json:/app/tsconfig.json
+            - ../logs:/app/logs
+        restart: unless-stopped
+        depends_on:
+            - postgres
+            - redis
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "node",
+                    "-e",
+                    "require('http').get('http://localhost:3000/health/live', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+                ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+
+    postgres:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_DB: talethreads
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+        ports:
+            - "5433:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        restart: unless-stopped
+
+    redis:
+        image: redis:alpine
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        restart: unless-stopped
+
+    # Redis Management UI (Development only)
+    redis-commander:
+        image: rediscommander/redis-commander:latest
+        platform: linux/amd64
+        ports:
+            - "8081:8081"
+        environment:
+            REDIS_HOSTS: local:redis:6379
+        depends_on:
+            - redis
+        restart: unless-stopped
+
+volumes:
+    postgres_data:
+    redis_data:

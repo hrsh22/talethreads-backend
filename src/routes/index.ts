@@ -17,7 +17,7 @@ router.get("/", (req, res) => {
             service: config.serviceName,
             version: config.serviceVersion,
             environment: config.nodeEnv,
-            message: "Comics AI Backend Service is running",
+            message: "Talethreads Backend Service is running",
             endpoints: {
                 health: "/health",
                 api: "/api/v1"

@@ -9,7 +9,7 @@ async function seedDatabase() {
         // Example seed data - You can modify this later when implementing auth
         const seedUsers = [
             {
-                email: "admin@comics-ai.com",
+                email: "admin@talethreads.com",
                 username: "admin",
                 passwordHash: "temp_hash", // This will be replaced when auth is implemented
                 firstName: "Admin",

@@ -9,14 +9,14 @@ const envSchema = z.object({
     NODE_ENV: z.enum(["development", "production", "test", "staging"]).default("development"),
     PORT: z.coerce.number().min(1).max(65535).default(3000),
     HOST: z.string().default("localhost"),
-    SERVICE_NAME: z.string().default("comics-ai-backend"),
+    SERVICE_NAME: z.string().default("talethreads-backend"),
     SERVICE_VERSION: z.string().default("1.0.0"),
     CORS_ORIGIN: z.string().default("http://localhost:3000"),
     RATE_LIMIT_WINDOW_MS: z.coerce.number().positive().default(900000),
     RATE_LIMIT_MAX_REQUESTS: z.coerce.number().positive().default(100),
     LOG_LEVEL: z.enum(["error", "warn", "info", "debug"]).default("info"),
     LOG_FORMAT: z.enum(["json", "simple"]).default("json"),
-    DATABASE_URL: z.string().default("postgresql://postgres:password@postgres:5433/comics_ai"),
+    DATABASE_URL: z.string().default("postgresql://postgres:password@postgres:5433/talethreads"),
     DB_POOL_MIN: z.coerce.number().min(0).default(2),
     DB_POOL_MAX: z.coerce.number().min(1).default(10),
     DB_SSL: z.enum(["true", "false"]).default("false"),
@@ -26,7 +26,7 @@ const envSchema = z.object({
     REDIS_PORT: z.coerce.number().min(1).max(65535).default(6379),
     REDIS_PASSWORD: z.string().optional(),
     REDIS_DB: z.coerce.number().min(0).default(0),
-    REDIS_KEY_PREFIX: z.string().default("comics-ai:"),
+    REDIS_KEY_PREFIX: z.string().default("talethreads:"),
     REDIS_TTL: z.coerce.number().positive().default(3600)
 });
 

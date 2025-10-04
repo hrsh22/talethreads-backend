@@ -1,9 +1,9 @@
-# Comics AI Backend - Architecture & Context Reference
+# Talethreads Backend - Architecture & Context Reference
 
 ## Project Overview
 
-**Project Name**: Comics AI Backend  
-**Description**: Production-ready microservice architecture backend for Comics AI platform  
+**Project Name**: Talethreads Backend
+**Description**: Production-ready microservice architecture backend for Talethreads platform  
 **Author**: hrsh22  
 **Version**: 1.0.0  
 **License**: MIT
@@ -64,7 +64,7 @@
 
 3. **Business Logic**
 
-    - Comics management APIs
+    - Content management APIs
     - AI processing endpoints
     - File upload/storage
 
@@ -220,7 +220,7 @@ PORT=3000
 HOST=localhost
 
 # Service Identity
-SERVICE_NAME=comics-ai-backend
+SERVICE_NAME=talethreads-backend
 SERVICE_VERSION=1.0.0
 
 # Security
@@ -270,7 +270,7 @@ LOG_FORMAT=json|simple
 
 1. **Database Schema Development**
 
-    - Expand database schema for comics entities
+    - Expand database schema for content entities
     - Create comprehensive migrations
     - Set up database seeding
 
@@ -280,8 +280,8 @@ LOG_FORMAT=json|simple
     - User registration/login
     - Role-based permissions
 
-3. **Comics Business Logic**
-    - Comic CRUD operations
+3. **Content Business Logic**
+    - Content CRUD operations
     - Image upload/processing
     - Search & filtering
 
@@ -289,13 +289,13 @@ LOG_FORMAT=json|simple
 
 - **Database**: Connection pooling, read replicas
 - **Caching**: Redis integration for API responses
-- **File Storage**: MinIO or S3 for comic images
+- **File Storage**: MinIO or S3 for content images
 - **Monitoring**: Prometheus/Grafana integration
 - **Load Balancing**: Nginx reverse proxy
 
 ### Planned Integrations
 
-- **File Storage**: MinIO for comic images
+- **File Storage**: MinIO for content images
 - **Monitoring**: Prometheus + Grafana
 - **Testing**: Jest + Supertest
 - **CI/CD**: GitHub Actions

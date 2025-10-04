@@ -1,273 +1,88 @@
 # Talethreads Backend
 
-A production-ready microservice architecture backend built with TypeScript, Node.js, and Express.
+A clean, production-ready backend service built with TypeScript, Node.js, and Express.
 
 ## Features
 
-- **TypeScript**: Fully typed with strict configuration
-- **Express.js**: Fast, unopinionated web framework
-- **Zod Validation**: TypeScript-first schema validation for requests and configuration
-- **Production Ready**: Comprehensive error handling, logging, and monitoring
-- **Security**: Helmet, CORS, rate limiting, and security headers
-- **Monitoring**: Health check endpoints and structured logging
-- **Scalable**: Clean architecture with separated concerns
+- TypeScript with strict mode
+- Structured logging (Winston)
+- Validated config (Zod)
+- Health endpoints and error handling
+- Drizzle ORM (PostgreSQL), Redis cache
 
-## Quick Start
-
-### Prerequisites
-
-**For Local Development:**
-
-- Node.js >= 18.0.0
-- npm >= 8.0.0
-
-**For Docker Development (Recommended):**
-
-- Docker
-- Docker Compose
-
-### Installation
+## Quick Start (local)
 
 ```bash
-# Install dependencies
+# 1) Install
 npm install
 
-# Copy environment variables
+# 2) Configure env
 cp .env.example .env
 
-# Start development server
+# 3) Run dev server (hot reload)
 npm run dev
 ```
 
-### Available Scripts
+## Scripts (most used)
 
 ```bash
-npm run dev          # Start development server with hot reload
-npm run build        # Build for production
-npm run start        # Start production server
-npm run type-check   # Run TypeScript type checking
-npm run format       # Format code with Prettier
-npm run format:check # Check code formatting
-npm run lint         # Run type checking and format check
-npm run clean        # Clean build directory
+npm run dev          # Start dev server with hot reload
+npm run build        # Compile TypeScript to dist (tsc)
+npm run start        # Start compiled server (dist/server.js)
 
-# Docker scripts
-npm run docker:dev   # Start development environment with hot reload
-npm run docker:prod  # Start production environment
-
-# Database scripts (using Drizzle ORM)
-npm run db:generate  # Generate migrations from schema changes
-npm run db:migrate   # Run pending migrations
-npm run db:push      # Push schema changes directly (dev only)
-npm run db:studio    # Open Drizzle Studio (database admin UI)
-npm run db:seed      # Seed database with initial data
+# Database (Drizzle)
+npm run db:generate  # Generate migrations from schema
+npm run db:migrate   # Apply migrations
+npm run db:studio    # Open Drizzle Studio
 ```
 
-## Docker Setup
-
-### Prerequisites
-
-- Docker
-- Docker Compose
-
-### Quick Start with Docker
-
-#### Development Mode (with Hot Reload) ⚡ [Default]
+## Docker (development)
 
 ```bash
-# Start development environment with hot reload (default)
-docker-compose up -d
-
-# Or use npm script for explicit control
-npm run docker:dev
-
-# Access development server:
-# - Backend API: http://localhost:3000 (hot reload enabled)
-# - Redis Admin: http://localhost:8081 (dev only)
-# - Database Admin: npm run db:studio (Drizzle Studio)
+npm run docker:dev       # Start dev stack (backend + postgres + redis)
+npm run docker:dev:build # Rebuild and start
+npm run docker:dev:down  # Stop stack
 ```
 
-#### Production Mode
+## Production (EC2 quick steps)
 
 ```bash
-# Start production environment
-npm run docker:prod
+# 1) On EC2: clone and install
+git clone https://github.com/yourusername/talethreads-backend.git
+cd talethreads-backend
+npm ci --only=production
 
-# View logs
-docker-compose logs -f
+# 2) Load environment variables
+# Option A: use defaults from .env (converted) — then:
+source scripts/set_env.sh
+# Option B: export your own env vars
 
-# Access services:
-# - Backend API: http://localhost:3000
-# - Database Admin: npm run db:studio (Drizzle Studio)
+# 3) Build and migrate
+npm run build
+npm run db:migrate
+
+# 4) Start (example with PM2)
+pm2 start npm --name "talethreads-backend" -- run start
+pm2 save
 ```
-
-### Docker Commands
-
-#### Service Management
-
-```bash
-# Start development services (default)
-docker-compose up -d
-
-# Start production services
-npm run docker:prod
-
-# Start with logs visible
-docker-compose up
-
-# Stop all services
-docker-compose down
-
-# Rebuild and start (after code changes)
-docker-compose up --build -d
-
-# Restart specific service
-docker-compose restart comics-ai-backend
-```
-
-#### Logs & Monitoring
-
-```bash
-# View all logs
-docker-compose logs -f
-
-# View specific service logs
-docker-compose logs -f comics-ai-backend
-docker-compose logs -f postgres
-docker-compose logs -f redis
-
-# View service status
-docker-compose ps
-```
-
-#### Database Operations
-
-```bash
-# Access PostgreSQL directly
-docker-compose exec postgres psql -U postgres -d comics_ai
-
-# Access PostgreSQL from host (port 5433)
-psql -h localhost -p 5433 -U postgres -d comics_ai
-
-# Create database backup
-docker-compose exec postgres pg_dump -U postgres comics_ai > backup.sql
-
-# Access Redis CLI
-docker-compose exec redis redis-cli
-```
-
-#### Development Workflow
-
-```bash
-# Quick restart after code changes
-docker-compose restart comics-ai-backend && docker-compose logs -f comics-ai-backend
-
-# Development with hot reload (no restart needed!)
-npm run docker:dev
-
-# Health check
-curl http://localhost:3000/health
-
-# Complete cleanup (⚠️ removes all data)
-docker-compose down -v
-```
-
-### Included Services
-
-| Service           | Port | Description                           |
-| ----------------- | ---- | ------------------------------------- |
-| Comics AI Backend | 3000 | API server (prod/dev via npm scripts) |
-| PostgreSQL        | 5433 | Database server                       |
-| Redis             | 6379 | Cache & session store                 |
-| Redis Commander   | 8081 | Redis management UI (dev only)        |
-| Drizzle Studio    | 4983 | Database admin UI (run locally)       |
-
-## Project Structure
-
-```
-src/
-├── config/          # Configuration management
-├── middleware/      # Express middleware
-├── routes/          # API route handlers
-├── types/           # TypeScript type definitions
-├── utils/           # Utility functions
-├── app.ts           # Express app configuration
-└── server.ts        # Server startup and shutdown
-```
-
-## API Endpoints
-
-### Health Checks
-
-- `GET /health` - Comprehensive health check with system metrics
-- `GET /health/ready` - Readiness probe for Kubernetes
-- `GET /health/live` - Liveness probe for Kubernetes
-
-### Service Info
-
-- `GET /` - Service information and status
-
-### API Examples (v1)
-
-- `POST /api/v1/ping` - Echo endpoint with validation
-- `GET /api/v1/search` - Search endpoint with query validation
-- `GET /api/v1/items/:id` - Get item by ID with UUID validation
-- `GET /api/v1/error` - Test error handling
 
 ## Environment Variables
 
-See `.env.example` for all available configuration options:
+- See `.env.example` for all available options
+- For production, you can source `scripts/set_env.sh` (exports based on your .env)
 
-- **Server**: PORT, HOST, NODE_ENV
-- **Service**: SERVICE_NAME, SERVICE_VERSION
-- **Security**: CORS_ORIGIN, rate limiting settings
-- **Logging**: LOG_LEVEL, LOG_FORMAT
+## Minimal Project Structure
 
-## Production Deployment
-
-### Option 1: Docker (Recommended)
-
-```bash
-# Start complete production stack
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Health check
-curl http://localhost:3000/health
 ```
-
-### Option 2: Node.js Direct
-
-1. Build the application:
-
-    ```bash
-    npm run build
-    ```
-
-2. Set production environment variables
-
-3. Start the server:
-    ```bash
-    npm start
-    ```
-
-## Features Included
-
-✅ **Database**: PostgreSQL 17 with Drizzle ORM & Studio  
-✅ **Caching**: Redis with management UI  
-✅ **Containerization**: Full Docker setup  
-✅ **Development Tools**: Drizzle Studio and Redis admin interfaces
-
-## Future Enhancements
-
-This foundation is ready for:
-
-- **Authentication**: JWT-based auth system
-- **File Storage**: MinIO for comic images
-- **Monitoring**: Prometheus + Grafana
-- **Load Balancing**: Nginx reverse proxy
+src/
+├── config/      # Zod-validated config
+├── middleware/  # Logging, security, errors
+├── routes/      # API routes (health, v1)
+├── db/          # Drizzle schema & migrations
+├── utils/       # Logger, validation
+├── app.ts       # Express app
+└── server.ts    # Server start
+```
 
 ## License
 

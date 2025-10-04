@@ -1,4 +1,4 @@
-# Production Dockerfile for Comics AI Backend
+# Production Dockerfile for Talethreads Backend
 FROM node:22-alpine
 
 # Create app directory and user for security
